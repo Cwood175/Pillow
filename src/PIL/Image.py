@@ -568,7 +568,9 @@ class Image:
 
     @property
     def readonly(self) -> int:
-        return (self._im and self._im.readonly) or self._readonly
+        if self._im is not None:
+            return self._im.readonly
+        return self._readonly
 
     @readonly.setter
     def readonly(self, readonly: int) -> None:
@@ -1159,7 +1161,8 @@ class Image:
             if new_im.mode == "P" and new_im.palette:
                 try:
                     new_im.info["transparency"] = new_im.palette.getcolor(
-                        cast(tuple[int, ...], trns), new_im  # trns was converted to RGB
+                        cast(tuple[int, ...], trns),
+                        new_im,  # trns was converted to RGB
                     )
                 except ValueError as e:
                     del new_im.info["transparency"]
@@ -3224,7 +3227,8 @@ class SupportsArrowArrayInterface(Protocol):
     """
 
     def __arrow_c_array__(
-        self, requested_schema: "PyCapsule" = None  # type: ignore[name-defined]  # noqa: F821, UP037
+        self,
+        requested_schema: "PyCapsule" = None,  # type: ignore[name-defined]  # noqa: F821, UP037
     ) -> tuple["PyCapsule", "PyCapsule"]:  # type: ignore[name-defined]  # noqa: F821, UP037
         raise NotImplementedError()
 

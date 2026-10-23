@@ -1025,7 +1025,7 @@ def getDefaultIntent(profile: _CmsProfileCompatible) -> int:
 
 def isIntentSupported(
     profile: _CmsProfileCompatible, intent: Intent, direction: Direction
-) -> Literal[-1, 1]:
+) -> int:
     """
     (pyCMS) Checks if a given intent is supported.
 
@@ -1063,14 +1063,11 @@ def isIntentSupported(
     :exception PyCMSError:
     """
 
-    try:
-        if not isinstance(profile, ImageCmsProfile):
-            profile = ImageCmsProfile(profile)
-        # FIXME: I get different results for the same data w. different
-        # compilers.  Bug in LittleCMS or in the binding?
-        if profile.profile.is_intent_supported(intent, direction):
-            return 1
-        else:
-            return -1
-    except (AttributeError, OSError, TypeError, ValueError) as v:
-        raise PyCMSError(v) from v
+    if not isinstance(profile, ImageCmsProfile):
+        profile = ImageCmsProfile(profile)
+    # FIXME: I get different results for the same data w. different
+    # compilers.  Bug in LittleCMS or in the binding?
+    if profile.profile.is_intent_supported(intent, direction):
+        return 1
+    else:
+        return -1
